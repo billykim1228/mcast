@@ -71,8 +71,8 @@ add_executable (server server.c codec.c codec_speex.c codec_lpcm.c audio_alsa.c 
 #target_link_libraries (client LINK_PUBLIC rtp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-target_link_libraries (client rtp speex jack curses )      
-target_link_libraries (server rtp speex )      
+target_link_libraries (client rtp speex jack)      
+target_link_libraries (server rtp speex jack)      
 endif()
 
 
