@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/billy/Study/sound/mcast/librtp/rtp.c
+stdio.h
+-
+stdlib.h
+-
+errno.h
+-
+unistd.h
+-
+string.h
+-
+sys/types.h
+-
+sys/socket.h
+-
+sys/time.h
+-
+arpa/inet.h
+-
+netinet/in.h
+-
+netdb.h
+-
+rtp.h
+/Users/billy/Study/sound/mcast/librtp/rtp.h
+
+/Users/billy/Study/sound/mcast/librtp/rtp.h
+stdint.h
+-
+
