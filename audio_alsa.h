@@ -7,9 +7,9 @@
 
 #ifdef ENABLE_ALSA
 #include <alsa/asoundlib.h>
-#else
-#include <jack/jack.h>
-#include "../libspeex/speex_resampler.h"
+//#else
+//#include <jack/jack.h>
+//#include "../libspeex/speex_resampler.h"
 #endif
 
 #ifdef ENABLE_ALSA

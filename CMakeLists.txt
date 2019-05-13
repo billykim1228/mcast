@@ -48,8 +48,8 @@ endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
-include_directories(/opt/local/include)
-link_directories(/opt/local/lib)
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
 
 endif()
 
