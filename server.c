@@ -103,6 +103,53 @@ int handler_cmd_packet_req_join(void)
 }
 
 // 
+// Handler : PT_CMD_REQ_PING
+//
+
+int send_cmd_ack_ping(uint32_t id, struct sockaddr_in *addr)
+{
+	RTP_CMD_DATA_ID data;
+	data.id = htonl(id);
+
+	send_cmd_packet_gen(&rtp, 
+		PT_CMD_ACK_PING, 0, &(data), sizeof(RTP_CMD_DATA_ID ), addr);
+
+	return 0;
+}
+
+
+int handler_cmd_packet_req_ping(void)
+{
+    RTP_CMD_PKT_REQ_PING *p = (RTP_CMD_PKT_REQ_PING *)(rtp.rbuf);
+    uint32_t id = ntohl(p->data.id);
+    uint32_t gid = id >> 24;
+    char str[128];
+
+    inet_ntop(AF_INET, &(rtp.peer.sin_addr), str, 64);
+
+    printf("REQ_PING : %3d, %8d, 0x%8.8x, [%3.3d] %s:%8.8d\n", 
+        gid, id, 0, client_cnt, str, ntohs(rtp.peer.sin_port));
+    
+    for (int i = 0; i < MAX_CLIENT; i++) {
+        //if (cli[i].use == 0 || cli[i].id == id) {
+        if (cli[i].id == id) {
+            cli[i].peer = rtp.peer;
+            printf("ACK_PING : %3d, %8d, 0x%8.8x, [%3.3d] %s:%8.8d\n", 
+                cli[i].id > 24, cli[i].id, 0, client_cnt, str, ntohs(rtp.peer.sin_port));
+            
+            rtp.ctrl |= RTP_PT_STOP;
+            send_cmd_ack_ping(cli[i].id, &(cli[i].peer));
+            rtp.ctrl &= ~RTP_PT_STOP;
+            //rtp_reset(&rtp, 0x0001, 110);
+            break;
+        }
+    }
+ 
+    return 0;
+}
+
+
+// 
 // Handler : PT_CMD_REQ_BYE
 //
 
@@ -315,6 +362,9 @@ int main(void)
                 else if (ntohs(p->c_hdr.cmd) == PT_CMD_NOF_STAT) {
                     handler_cmd_packet_nof_stat();
                 } 
+                else if (ntohs(p->c_hdr.cmd) == PT_CMD_REQ_PING) {
+                    handler_cmd_packet_req_ping();
+                }
                 else {
                     printf("RTP invalid cmd : %d\n", ntohs(p->c_hdr.cmd));
                 }

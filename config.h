@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-//#define ENABLE_ALSA             1
+#define ENABLE_ALSA             1
 #define	DEFAULT_CODEC_ID		1	
 #define DEFAULT_SAMPLE_RATE		6000
 #define DEFAULT_RTP_PORT		40001	

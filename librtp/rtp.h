@@ -98,6 +98,8 @@ typedef enum {
 #define PT_CMD_REQ_BYE		(PT_CMD_REQ, PT_CMD_BYE )
 #define PT_CMD_ACK_BYE		(PT_CMD_ACK, PT_CMD_BYE )
 #define PT_CMD_NOF_STAT		(PT_CMD_NOF, PT_CMD_STAT)
+#define PT_CMD_REQ_PING		(PT_CMD_REQ, PT_CMD_PING)
+#define PT_CMD_ACK_PING		(PT_CMD_ACK, PT_CMD_PING)
 
 #endif
 

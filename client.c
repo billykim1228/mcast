@@ -133,6 +133,35 @@ int handler_cmd_ack_join(void *buf)
     return 0;
 }
 
+int send_cmd_req_ping(uint32_t id)
+{
+    RTP_CMD_DATA_ID data;
+  
+    data.id = htonl(id);
+
+    send_cmd_packet_gen(&rtp,  
+        PT_CMD_REQ_PING, 0, &(data), sizeof(RTP_CMD_DATA_ID), &(rtp.svr));
+
+    printf("SEND REQ_PING : %4d\n", (id & 0xff00000) >> 24);
+    
+    return 0;
+}
+
+int handler_cmd_ack_ping(void *buf)
+{
+    uint32_t id;
+    RTP_CMD_PKT_ACK_PING *p = (RTP_CMD_PKT_ACK_PING *)buf;
+
+    user_id = ntohl(p->data.id);
+
+    if (user_id == ntohl(p->data.id)) {
+        printf("RECV ACK_PING : %4d, 0x%8.8x\n", (user_id & 0xff000000) > 24, user_id);
+        state = STATE_READY;
+    }
+
+    return 0;
+}
+
 int send_cmd_req_bye(uint32_t id)
 {
     RTP_CMD_DATA_ID data;
@@ -330,6 +359,19 @@ int ptt_ctrl_update(void)
             ptt_time = start_timer();       
             send_cmd_req_ptt(user_id, g_mask, 0xffffffff, 0);
             state = STATE_TX_WAIT;
+        } else {
+            static uint8_t ping_run;
+            static uint64_t ping_time = 0;
+            if (!ping_run) {
+                ping_time = start_timer();
+                send_cmd_req_ping(user_id);
+                ping_run = 1;
+            } else {
+                if (check_timer(ping_time) > 1000) {
+                    ping_run = 0;
+                }
+            }
+
         }
     } else if (state == STATE_IDLE) {
 
@@ -420,7 +462,11 @@ int handler_recv_packet(CODEC_COM *c, int mode)
                     printf("RECV NOF_EOF\n");
                 }
             } 
-            
+            // Handler : CMD_ACK_PING
+            else if (ntohs(p->c_hdr.cmd) == PT_CMD_ACK_PING) {
+                handler_cmd_ack_ping(rtp.rbuf);
+            } 
+
             else {
                 printf("receive Invalid CMD : %d, %d\n", ntohs(p->c_hdr.cmd), ntohs(p->c_hdr.len));
             }   
